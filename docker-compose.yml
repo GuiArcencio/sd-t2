@@ -1,0 +1,22 @@
+services:
+  supplier:
+    build: .
+    environment:
+      - ENTITY=supplier
+    container_name: sdt2-supplier
+
+  warehouse:
+    build: .
+    environment:
+      - ENTITY=warehouse
+    depends_on:
+      - supplier
+    container_name: sdt2-warehouse
+  
+  factory1:
+    build: .
+    environment:
+      - ENTITY=factory1
+    depends_on:
+      - warehouse
+    container_name: sdt2-factory1
