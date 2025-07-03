@@ -72,5 +72,8 @@ class Stock:
         while True:
             quantity_requested = int(self._storefront_socket.recv_string())
             quantity_to_send = self.take(quantity_requested)
+            while quantity_to_send < quantity_requested:
+                quantity_to_send += self.take(quantity_requested - quantity_to_send)
+
             sleep(STOREFRONT_PER_ITEM_SENT_DELAY * quantity_to_send)
             self._storefront_socket.send_string(str(quantity_to_send))

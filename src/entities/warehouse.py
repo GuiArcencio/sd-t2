@@ -1,5 +1,9 @@
+import logging
+
 from src.constants import WAREHOUSE_RED_THRESHOLD, WAREHOUSE_YELLOW_THRESHOLD
 from src.stock import Stock
+
+logger = logging.getLogger()
 
 
 class Warehouse:
@@ -22,6 +26,7 @@ class Warehouse:
         while True:
             quantity_available, status = self._stock.get_quantity()
             if status == "RED":
-                self._stock.request_supply(
-                    WAREHOUSE_YELLOW_THRESHOLD - quantity_available
-                )
+                quantity_to_request = WAREHOUSE_YELLOW_THRESHOLD - quantity_available
+
+                logger.info(f"Requesting {quantity_to_request} parts from supplier.")
+                self._stock.request_supply(quantity_to_request)

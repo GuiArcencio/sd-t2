@@ -7,10 +7,12 @@ class Factory:
 
     def __init__(self, num_lines: int, supplier_hostname: str, supplier_port: int):
         self._lines = list()
-        for _ in range(num_lines):
+        for i in range(num_lines):
             self._lines.append(
                 AssemblyLine(
-                    supplier_hostname=supplier_hostname, supplier_port=supplier_port
+                    id=str(i),
+                    supplier_hostname=supplier_hostname,
+                    supplier_port=supplier_port,
                 )
             )
 

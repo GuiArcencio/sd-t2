@@ -1,3 +1,4 @@
+import logging
 from queue import Queue
 from time import sleep
 
@@ -10,12 +11,16 @@ from src.constants import (
 from src.multithreading import launch_thread
 from src.stock import Stock
 
+logger = logging.getLogger()
+
 
 class AssemblyLine:
+    _id: str
     _stock: Stock
     _task_queue: Queue
 
-    def __init__(self, supplier_hostname: str, supplier_port: int):
+    def __init__(self, id: str, supplier_hostname: str, supplier_port: int):
+        self._id = id
         self._stock = Stock(
             supplier_hostname=supplier_hostname,
             supplier_port=supplier_port,
@@ -42,12 +47,15 @@ class AssemblyLine:
                 sleep(time_needed)
 
                 # TODO: send items somewhere
+            logger.info(f"[Line {self._id}] Produced {quantity} of Pv{item_type}.")
 
     def run(self):
         launch_thread(self._assembly)
         while True:
             quantity_available, status = self._stock.get_quantity()
             if status == "RED":
-                self._stock.request_supply(
-                    ASSEMBLYLINE_YELLOW_THRESHOLD - quantity_available
+                quantity_to_request = ASSEMBLYLINE_YELLOW_THRESHOLD - quantity_available
+                logger.info(
+                    f"[Line {self._id}] Requesting {quantity_to_request} parts from warehouse."
                 )
+                self._stock.request_supply(quantity_to_request)

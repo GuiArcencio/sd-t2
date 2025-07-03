@@ -1,8 +1,15 @@
+import logging
 import os
 
 from src.entities.factory import Factory
 from src.entities.supplier import Supplier
 from src.entities.warehouse import Warehouse
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="[%(asctime)s] [%(levelname)s] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
 
 
 def main():

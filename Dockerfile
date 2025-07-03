@@ -8,4 +8,4 @@ RUN pip install --no-cache-dir --trusted-host pypi.python.org -r requirements.tx
 
 COPY . .
 
-CMD ["python", "run.py"]
+CMD ["python", "-u", "run.py"]
