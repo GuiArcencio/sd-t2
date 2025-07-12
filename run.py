@@ -2,6 +2,7 @@ import logging
 import os
 
 from src.entities.factory import Factory
+from src.entities.monitor import run_monitor
 from src.entities.supplier import Supplier
 from src.entities.warehouse import Warehouse
 
@@ -13,7 +14,7 @@ logging.basicConfig(
 
 
 def main():
-    entity = os.getenv("ENTITY", "")
+    entity = os.getenv("ENTITY", "monitor")
     if entity == "supplier":
         Supplier(5000).run()
     elif entity == "warehouse":
@@ -22,6 +23,8 @@ def main():
         ).run()
     elif entity == "factory1":
         Factory(num_lines=5, supplier_hostname="warehouse", supplier_port=5000).run()
+    elif entity == "monitor":
+        run_monitor()
 
 
 if __name__ == "__main__":

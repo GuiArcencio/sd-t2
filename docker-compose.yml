@@ -9,6 +9,8 @@ services:
     build: .
     environment:
       - ENTITY=warehouse
+    ports:
+      - 6000:6000
     depends_on:
       - supplier
     container_name: sdt2-warehouse
@@ -17,6 +19,8 @@ services:
     build: .
     environment:
       - ENTITY=factory1
+    ports:
+      - 6001:6000
     depends_on:
       - warehouse
     container_name: sdt2-factory1

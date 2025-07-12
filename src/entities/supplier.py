@@ -3,8 +3,6 @@ from time import sleep
 
 import zmq
 
-from src.constants import SUPPLIER_PER_ITEM_SENT_DELAY
-
 logger = logging.getLogger()
 
 
@@ -20,9 +18,6 @@ class Supplier:
         while True:
             quantity_requested = int(self._storefront_socket.recv_string())
 
-            logger.info(f"{quantity_requested} parts requested.")
-
-            sleep(SUPPLIER_PER_ITEM_SENT_DELAY * quantity_requested)
             self._storefront_socket.send_string(str(quantity_requested))
 
             logger.info(f"{quantity_requested} parts sent.")

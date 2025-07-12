@@ -48,7 +48,8 @@ class Stock:
         return current_quantity, status
 
     def take(self, quantity: int) -> int:
-        return self._quantity.update(lambda q: q - min(quantity, q))
+        old_value, new_value = self._quantity.update(lambda q: q - min(quantity, q))
+        return old_value - new_value
 
     def add(self, quantity: int):
         self._quantity.update(lambda q: q + quantity)
@@ -56,6 +57,7 @@ class Stock:
     def request_supply(self, quantity: int):
         self._supplier_socket.send_string(str(quantity))
         quantity_received = int(self._supplier_socket.recv_string())
+        sleep(STOREFRONT_PER_ITEM_SENT_DELAY * quantity_received)
         self.add(quantity_received)
 
     def run_storefront(self, port: int):
@@ -75,5 +77,4 @@ class Stock:
             while quantity_to_send < quantity_requested:
                 quantity_to_send += self.take(quantity_requested - quantity_to_send)
 
-            sleep(STOREFRONT_PER_ITEM_SENT_DELAY * quantity_to_send)
             self._storefront_socket.send_string(str(quantity_to_send))

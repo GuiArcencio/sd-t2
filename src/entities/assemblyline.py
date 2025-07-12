@@ -35,10 +35,14 @@ class AssemblyLine:
     def _assembly(self):
         while True:
             item_type, quantity = self._task_queue.get()
-            for _ in range(quantity):
-                parts_needed = PRODUCT_PARTS[item_type]
-                time_needed = PRODUCT_DELAYS[item_type]
+            parts_needed = PRODUCT_PARTS[item_type]
+            time_needed = PRODUCT_DELAYS[item_type]
 
+            logger.info(
+                f"[Line {self._id}] Starting production of {quantity} units of Pv{item_type}"
+            )
+
+            for _ in range(quantity):
                 parts = self._stock.take(parts_needed)
                 while parts < parts_needed:
                     parts += self._stock.take(parts_needed - parts)
@@ -46,8 +50,10 @@ class AssemblyLine:
                 # Work
                 sleep(time_needed)
 
-                # TODO: send items somewhere
-            logger.info(f"[Line {self._id}] Produced {quantity} of Pv{item_type}.")
+            # TODO: send items somewhere
+            logger.info(
+                f"[Line {self._id}] Produced {quantity} items of Pv{item_type}."
+            )
 
     def run(self):
         launch_thread(self._assembly)
