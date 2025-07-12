@@ -24,3 +24,13 @@ services:
     depends_on:
       - warehouse
     container_name: sdt2-factory1
+
+  store:
+    build: .
+    environment:
+      - ENTITY=store
+    ports:
+      - 6003:6000
+    depends_on:
+      - factory1
+    container_name: sdt2-store

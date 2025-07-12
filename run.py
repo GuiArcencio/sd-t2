@@ -3,6 +3,7 @@ import os
 
 from src.entities.factory import Factory
 from src.entities.monitor import run_monitor
+from src.entities.store import Store
 from src.entities.supplier import Supplier
 from src.entities.warehouse import Warehouse
 
@@ -23,6 +24,8 @@ def main():
         ).run()
     elif entity == "factory1":
         Factory(num_lines=5, supplier_hostname="warehouse", supplier_port=5000).run()
+    elif entity == "store":
+        Store().run()
     elif entity == "monitor":
         run_monitor()
 

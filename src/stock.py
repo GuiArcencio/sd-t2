@@ -8,7 +8,7 @@ from src.multithreading import AtomicValue, launch_thread
 
 class Stock:
     """
-    General stock/buffer class for parts or products.
+    General stock/buffer class for parts.
     """
 
     _yellow_threshold: int
