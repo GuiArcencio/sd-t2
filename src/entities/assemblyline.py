@@ -2,13 +2,16 @@ import logging
 from queue import Queue
 from time import sleep
 
+import zmq
+
 from src.constants import (
     ASSEMBLYLINE_RED_THRESHOLD,
     ASSEMBLYLINE_YELLOW_THRESHOLD,
     PRODUCT_DELAYS,
+    PRODUCT_DELIVERY_TIME,
     PRODUCT_PARTS,
 )
-from src.multithreading import launch_thread
+from src.multithreading import delay_thread, launch_thread
 from src.stock import Stock
 
 logger = logging.getLogger()
@@ -18,8 +21,11 @@ class AssemblyLine:
     _id: str
     _stock: Stock
     _task_queue: Queue
+    _store_socket: zmq.Socket
 
     def __init__(self, id: str, supplier_hostname: str, supplier_port: int):
+        context = zmq.Context.instance()
+
         self._id = id
         self._stock = Stock(
             supplier_hostname=supplier_hostname,
@@ -28,6 +34,9 @@ class AssemblyLine:
             red_threshold=ASSEMBLYLINE_RED_THRESHOLD,
         )
         self._task_queue = Queue()
+
+        self._store_socket = context.socket(zmq.PUSH)
+        self._store_socket.connect(f"tcp://store:5000")
 
     def request(self, item_type: int, quantity: int):
         self._task_queue.put((item_type, quantity))
@@ -50,10 +59,19 @@ class AssemblyLine:
                 # Work
                 sleep(time_needed)
 
-            # TODO: send items somewhere
+            delay_thread(
+                task=self._send_products,
+                timeout=PRODUCT_DELIVERY_TIME,
+                quantity=quantity,
+                item_type=item_type,
+            )
+
             logger.info(
                 f"[Line {self._id}] Produced {quantity} items of Pv{item_type}."
             )
+
+    def _send_products(self, quantity: int, item_type: int):
+        self._store_socket.send_string(f"{quantity}:{item_type}")
 
     def run(self):
         launch_thread(self._assembly)

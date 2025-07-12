@@ -2,7 +2,7 @@ from time import sleep
 
 import zmq
 
-from src.constants import STOREFRONT_PER_ITEM_SENT_DELAY
+from src.constants import PART_DELIVERY_TIME
 from src.multithreading import AtomicValue, launch_thread
 
 
@@ -57,7 +57,7 @@ class Stock:
     def request_supply(self, quantity: int):
         self._supplier_socket.send_string(str(quantity))
         quantity_received = int(self._supplier_socket.recv_string())
-        sleep(STOREFRONT_PER_ITEM_SENT_DELAY * quantity_received)
+        sleep(PART_DELIVERY_TIME)
         self.add(quantity_received)
 
     def run_storefront(self, port: int):

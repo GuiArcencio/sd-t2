@@ -50,6 +50,8 @@ def _run_monitor(stdscr: curses.window):
     warehouse_socket.connect("tcp://localhost:6000")
     factory1_socket: zmq.Socket = context.socket(zmq.REQ)
     factory1_socket.connect("tcp://localhost:6001")
+    factory2_socket: zmq.Socket = context.socket(zmq.REQ)
+    factory2_socket.connect("tcp://localhost:6002")
 
     store_socket: zmq.Socket = context.socket(zmq.REQ)
     store_socket.connect("tcp://localhost:6003")
@@ -72,9 +74,20 @@ def _run_monitor(stdscr: curses.window):
                 curses.color_pair(colors[status]),
             )
 
-        stdscr.addstr(16, 0, "Depósito")
+        stdscr.addstr(2, 40, "Fábrica 2")
+        info = get_assembly_lines_info(factory2_socket)
+        for i, (qty, status) in enumerate(info):
+            stdscr.addstr(
+                3 + i,
+                44,
+                f"> Linha {i+1}: {qty} partes",
+                curses.color_pair(colors[status]),
+            )
+
+        stdscr.addstr(18, 0, "Depósito")
         info = get_store_info(store_socket)
         for i, (current, requested) in enumerate(info):
-            stdscr.addstr(17 + i, 4, f"> Pv{i+1}: {current} / {requested}")
+            stdscr.addstr(19 + i, 4, f"> Pv{i+1}: {current} / {requested}")
 
         stdscr.refresh()
+        sleep(0.3)

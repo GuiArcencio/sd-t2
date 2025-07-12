@@ -24,6 +24,8 @@ def main():
         ).run()
     elif entity == "factory1":
         Factory(num_lines=5, supplier_hostname="warehouse", supplier_port=5000).run()
+    elif entity == "factory2":
+        Factory(num_lines=13, supplier_hostname="warehouse", supplier_port=5000).run()
     elif entity == "store":
         Store().run()
     elif entity == "monitor":

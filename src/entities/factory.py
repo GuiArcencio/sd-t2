@@ -6,6 +6,7 @@ from src.multithreading import launch_thread
 
 class Factory:
     _lines: list[AssemblyLine]
+    _request_socket: zmq.Socket
     _monitor_socket: zmq.Socket
 
     def __init__(self, num_lines: int, supplier_hostname: str, supplier_port: int):
@@ -21,18 +22,29 @@ class Factory:
                 )
             )
 
+        self._request_socket = context.socket(zmq.PULL)
+        self._request_socket.bind("tcp://*:5000")
+
         self._monitor_socket = context.socket(zmq.REP)
         self._monitor_socket.bind("tcp://*:6000")
 
     def run(self):
         for line in self._lines:
             launch_thread(line.run)
-            line.request(1, 60)
 
         launch_thread(task=self.monitor_thread)
 
         while True:
-            pass
+            request = self._request_socket.recv_string().split(";")
+            for item_type, items in enumerate(request):
+                items = int(items)
+                if items > 0:
+                    quotient = items // len(self._lines)
+                    remainder = items % len(self._lines)
+                    for i, line in enumerate(self._lines):
+                        line.request(
+                            item_type + 1, quotient + (1 if i < remainder else 0)
+                        )
 
     def monitor_thread(self):
         while True:
