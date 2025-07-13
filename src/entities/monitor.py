@@ -60,9 +60,8 @@ def _run_monitor(stdscr: curses.window):
         stdscr.erase()
 
         qty, status = get_warehouse_info(warehouse_socket)
-        stdscr.addstr(
-            0, 0, f"Almoxarifado: {qty} partes", curses.color_pair(colors[status])
-        )
+        stdscr.addstr(0, 0, "Almoxarifado: ")
+        stdscr.addstr(f"{qty} partes", curses.color_pair(colors[status]))
 
         stdscr.addstr(2, 0, "Fábrica 1")
         info = get_assembly_lines_info(factory1_socket)
@@ -84,10 +83,10 @@ def _run_monitor(stdscr: curses.window):
                 curses.color_pair(colors[status]),
             )
 
-        stdscr.addstr(18, 0, "Depósito")
+        stdscr.addstr(13, 0, "Depósito")
         info = get_store_info(store_socket)
         for i, (current, requested) in enumerate(info):
-            stdscr.addstr(19 + i, 4, f"> Pv{i+1}: {current} / {requested}")
+            stdscr.addstr(14 + i, 4, f"> Pv{i+1}: {current} / {requested}")
 
         stdscr.refresh()
         sleep(0.3)
